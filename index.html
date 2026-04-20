@@ -15,7 +15,7 @@
 
       <label>총 용량</label>
       <div class="unit-input">
-        <input type="text" id="totalAmount" placeholder="1000" inputmode="decimal">
+        <input type="text" id="totalAmount" placeholder="1,000" inputmode="decimal">
         <div class="unit-inside" data-target="totalAmount">
           <button type="button" class="unit-btn active" data-unit="ml">ml</button>
           <button type="button" class="unit-btn" data-unit="L">L</button>
@@ -47,7 +47,7 @@
 </div>
 
 <style>
-:root{
+:root {
   color-scheme: light dark;
   --ui-font: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 
@@ -60,8 +60,8 @@
   --placeholder: #9a9a9a;
 }
 
-@media (prefers-color-scheme: dark){
-  :root{
+@media (prefers-color-scheme: dark) {
+  :root {
     --calc-border: #6b6b6b;
     --divider: #555555;
     --text-main: #f5f5f5;
@@ -72,7 +72,7 @@
   }
 }
 
-.dilution-calculator{
+.dilution-calculator {
   font-family: var(--ui-font);
   border: 1px solid var(--calc-border);
   border-radius: 14px;
@@ -84,7 +84,7 @@
   box-sizing: border-box;
 }
 
-.calc-title{
+.calc-title {
   text-align: center;
   margin-bottom: 30px;
   font-size: 26px;
@@ -92,37 +92,37 @@
   color: var(--text-main);
 }
 
-.calc-body{
+.calc-body {
   display: flex;
   gap: 40px;
 }
 
-.calc-input{
+.calc-input {
   flex: 1;
 }
 
-label{
+label {
   display: block;
   color: var(--text-sub);
   font-weight: 500;
   margin-bottom: 4px;
 }
 
-.ratio-input{
+.ratio-input {
   display: flex;
   align-items: center;
   gap: 8px;
   margin-bottom: 10px;
 }
 
-.ratio-input span{
+.ratio-input span {
   font-size: 18px;
   font-weight: 700;
   color: var(--text-main);
   white-space: nowrap;
 }
 
-input{
+input {
   width: 100%;
   padding: 10px;
   margin: 0;
@@ -136,26 +136,26 @@ input{
   outline: none;
 }
 
-input::placeholder{
+input::placeholder {
   color: var(--placeholder);
 }
 
 input::-webkit-inner-spin-button,
-input::-webkit-outer-spin-button{
+input::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-.unit-input{
+.unit-input {
   position: relative;
   margin-bottom: 10px;
 }
 
-.unit-input input{
+.unit-input input {
   padding-right: 86px;
 }
 
-.unit-inside{
+.unit-inside {
   position: absolute;
   right: 8px;
   top: 50%;
@@ -165,7 +165,7 @@ input::-webkit-outer-spin-button{
   background: transparent;
 }
 
-.unit-btn{
+.unit-btn {
   appearance: none;
   border: none;
   background: transparent;
@@ -179,69 +179,69 @@ input::-webkit-outer-spin-button{
   line-height: 1;
 }
 
-.unit-btn + .unit-btn{
+.unit-btn + .unit-btn {
   border-left: 1px solid var(--input-border);
 }
 
-.unit-btn.active{
+.unit-btn.active {
   color: var(--text-main);
   font-weight: 700;
 }
 
-.group-divider{
+.group-divider {
   width: 100%;
   height: 1px;
   background: var(--divider);
-  margin: 20px 0 20px 0;
+  margin: 20px 0;
 }
 
-@media (max-width: 768px){
-  .dilution-calculator{
+@media (max-width: 768px) {
+  .dilution-calculator {
     padding: 17px;
   }
 
-  .calc-title{
+  .calc-title {
     font-size: 25px;
     margin-bottom: 18px;
     margin-top: 0;
   }
 
-  .calc-body{
+  .calc-body {
     flex-direction: column;
     gap: 15px;
   }
 
-  label{
+  label {
     font-size: 15px;
     margin-bottom: 4px;
   }
 
-  input{
+  input {
     padding: 8px;
     font-size: 15px;
   }
 
-  .ratio-input{
+  .ratio-input {
     gap: 6px;
     margin-bottom: 10px;
   }
 
-  .ratio-input span{
+  .ratio-input span {
     font-size: 20px;
   }
 
-  .unit-input input{
+  .unit-input input {
     padding-right: 76px;
   }
 
-  .unit-btn{
+  .unit-btn {
     font-size: 12px;
     padding: 0 7px;
     height: 22px;
   }
 
-  .group-divider{
-    margin: 20px 0 12px 0;
+  .group-divider {
+    margin: 20px 0 12px;
   }
 }
 </style>
@@ -260,17 +260,39 @@ const units = {
   waterAmount: "ml"
 };
 
+// 각 필드의 "진짜 값"을 ml 기준으로 별도 보관
+// 단위 버튼 클릭 시 이 값에서 변환하므로 반올림 오차 누적 없음
+const rawMl = {
+  totalAmount: NaN,
+  shampooAmount: NaN,
+  waterAmount: NaN
+};
+
+// 천 단위 쉼표, 유럽식 소수점(쉼표) 모두 처리
 function parseNumber(value) {
   if (value == null) return NaN;
-  const cleaned = String(value).trim().replace(/,/g, ".");
+  let cleaned = String(value).trim();
   if (cleaned === "") return NaN;
+
+  // 유럽식 "1.000,5" → 쉼표가 소수점인 경우 감지
+  const hasCommaDecimal = /\d,\d/.test(cleaned) && !/\d\.\d/.test(cleaned);
+  if (hasCommaDecimal) {
+    cleaned = cleaned.replace(/\./g, "").replace(",", ".");
+  } else {
+    cleaned = cleaned.replace(/,/g, "");
+  }
+
   return parseFloat(cleaned);
 }
 
+// 천 단위 쉼표 + 소수점 2자리까지 표시
 function formatNumber(value) {
   if (!isFinite(value)) return "";
   const rounded = Math.round(value * 100) / 100;
-  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2);
+  return rounded.toLocaleString("ko-KR", {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2
+  });
 }
 
 function toMl(fieldId, value) {
@@ -283,52 +305,53 @@ function fromMl(fieldId, valueMl) {
   return units[fieldId] === "L" ? valueMl / 1000 : valueMl;
 }
 
+function setField(el, fieldId, valueMl) {
+  rawMl[fieldId] = valueMl;
+  el.value = isFinite(valueMl) ? formatNumber(fromMl(fieldId, valueMl)) : "";
+}
+
 function clearBottomPair() {
   shampooAmountEl.value = "";
   waterAmountEl.value = "";
+  rawMl.shampooAmount = NaN;
+  rawMl.waterAmount = NaN;
 }
 
 function clearTopPair() {
   waterRatioEl.value = "";
   totalAmountEl.value = "";
+  rawMl.totalAmount = NaN;
 }
 
 function topPairValid() {
   const ratio = parseNumber(waterRatioEl.value);
-  const totalRaw = parseNumber(totalAmountEl.value);
-  const totalMl = toMl("totalAmount", totalRaw);
-
+  const totalMl = toMl("totalAmount", parseNumber(totalAmountEl.value));
   return !isNaN(ratio) && !isNaN(totalMl) && ratio >= 0 && totalMl >= 0;
 }
 
 function bottomPairValid() {
-  const shampooRaw = parseNumber(shampooAmountEl.value);
-  const waterRaw = parseNumber(waterAmountEl.value);
-  const shampooMl = toMl("shampooAmount", shampooRaw);
-  const waterMl = toMl("waterAmount", waterRaw);
-
+  const shampooMl = toMl("shampooAmount", parseNumber(shampooAmountEl.value));
+  const waterMl = toMl("waterAmount", parseNumber(waterAmountEl.value));
   return !isNaN(shampooMl) && !isNaN(waterMl) && shampooMl > 0 && waterMl >= 0;
 }
 
 function calculateFromTopPair() {
   const ratio = parseNumber(waterRatioEl.value);
   const totalMl = toMl("totalAmount", parseNumber(totalAmountEl.value));
-
   if (isNaN(ratio) || isNaN(totalMl) || ratio < 0 || totalMl < 0) return;
 
   const shampooMl = totalMl / (1 + ratio);
   const waterMl = totalMl - shampooMl;
 
   isUpdating = true;
-  shampooAmountEl.value = formatNumber(fromMl("shampooAmount", shampooMl));
-  waterAmountEl.value = formatNumber(fromMl("waterAmount", waterMl));
+  setField(shampooAmountEl, "shampooAmount", shampooMl);
+  setField(waterAmountEl, "waterAmount", waterMl);
   isUpdating = false;
 }
 
 function calculateFromBottomPair() {
   const shampooMl = toMl("shampooAmount", parseNumber(shampooAmountEl.value));
   const waterMl = toMl("waterAmount", parseNumber(waterAmountEl.value));
-
   if (isNaN(shampooMl) || isNaN(waterMl) || shampooMl <= 0 || waterMl < 0) return;
 
   const ratio = waterMl / shampooMl;
@@ -336,56 +359,35 @@ function calculateFromBottomPair() {
 
   isUpdating = true;
   waterRatioEl.value = formatNumber(ratio);
-  totalAmountEl.value = formatNumber(fromMl("totalAmount", totalMl));
+  setField(totalAmountEl, "totalAmount", totalMl);
   isUpdating = false;
 }
 
 waterRatioEl.addEventListener("input", () => {
   if (isUpdating) return;
-
-  isUpdating = true;
   clearBottomPair();
-  isUpdating = false;
-
-  if (topPairValid()) {
-    calculateFromTopPair();
-  }
+  if (topPairValid()) calculateFromTopPair();
 });
 
 totalAmountEl.addEventListener("input", () => {
   if (isUpdating) return;
-
-  isUpdating = true;
+  rawMl.totalAmount = toMl("totalAmount", parseNumber(totalAmountEl.value));
   clearBottomPair();
-  isUpdating = false;
-
-  if (topPairValid()) {
-    calculateFromTopPair();
-  }
+  if (topPairValid()) calculateFromTopPair();
 });
 
 shampooAmountEl.addEventListener("input", () => {
   if (isUpdating) return;
-
-  isUpdating = true;
+  rawMl.shampooAmount = toMl("shampooAmount", parseNumber(shampooAmountEl.value));
   clearTopPair();
-  isUpdating = false;
-
-  if (bottomPairValid()) {
-    calculateFromBottomPair();
-  }
+  if (bottomPairValid()) calculateFromBottomPair();
 });
 
 waterAmountEl.addEventListener("input", () => {
   if (isUpdating) return;
-
-  isUpdating = true;
+  rawMl.waterAmount = toMl("waterAmount", parseNumber(waterAmountEl.value));
   clearTopPair();
-  isUpdating = false;
-
-  if (bottomPairValid()) {
-    calculateFromBottomPair();
-  }
+  if (bottomPairValid()) calculateFromBottomPair();
 });
 
 document.querySelectorAll(".unit-inside").forEach(toggle => {
@@ -398,39 +400,23 @@ document.querySelectorAll(".unit-inside").forEach(toggle => {
       const oldUnit = units[targetId];
       if (newUnit === oldUnit) return;
 
-      const currentValue = parseNumber(inputEl.value);
-
-      if (!isNaN(currentValue)) {
-        const valueMl = oldUnit === "L" ? currentValue * 1000 : currentValue;
-        const converted = newUnit === "L" ? valueMl / 1000 : valueMl;
-        inputEl.value = formatNumber(converted);
-      }
-
       units[targetId] = newUnit;
-
       toggle.querySelectorAll(".unit-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
+
+      // 저장된 ml 원본 값에서 표시만 변환 → 반올림 오차 누적 없음
+      if (isFinite(rawMl[targetId])) {
+        inputEl.value = formatNumber(fromMl(targetId, rawMl[targetId]));
+      }
 
       if (isUpdating) return;
 
       if (targetId === "totalAmount") {
-        isUpdating = true;
         clearBottomPair();
-        isUpdating = false;
-
-        if (topPairValid()) {
-          calculateFromTopPair();
-        }
-      }
-
-      if (targetId === "shampooAmount" || targetId === "waterAmount") {
-        isUpdating = true;
+        if (topPairValid()) calculateFromTopPair();
+      } else {
         clearTopPair();
-        isUpdating = false;
-
-        if (bottomPairValid()) {
-          calculateFromBottomPair();
-        }
+        if (bottomPairValid()) calculateFromBottomPair();
       }
     });
   });
