@@ -14,27 +14,29 @@
       </div>
 
       <label>총 용량</label>
-      <div class="unit-input-wrap">
+      <div class="unit-input">
         <input type="text" id="totalAmount" placeholder="1000" inputmode="decimal">
-        <div class="unit-toggle" data-target="totalAmount">
+        <div class="unit-inside" data-target="totalAmount">
           <button type="button" class="unit-btn active" data-unit="ml">ml</button>
           <button type="button" class="unit-btn" data-unit="L">L</button>
         </div>
       </div>
 
+      <div class="group-divider"></div>
+
       <label>원액</label>
-      <div class="unit-input-wrap">
+      <div class="unit-input">
         <input type="text" id="shampooAmount" placeholder="90.91" inputmode="decimal">
-        <div class="unit-toggle" data-target="shampooAmount">
+        <div class="unit-inside" data-target="shampooAmount">
           <button type="button" class="unit-btn active" data-unit="ml">ml</button>
           <button type="button" class="unit-btn" data-unit="L">L</button>
         </div>
       </div>
 
       <label>물</label>
-      <div class="unit-input-wrap">
+      <div class="unit-input">
         <input type="text" id="waterAmount" placeholder="909.09" inputmode="decimal">
-        <div class="unit-toggle" data-target="waterAmount">
+        <div class="unit-inside" data-target="waterAmount">
           <button type="button" class="unit-btn active" data-unit="ml">ml</button>
           <button type="button" class="unit-btn" data-unit="L">L</button>
         </div>
@@ -56,9 +58,6 @@
   --input-bg: transparent;
   --input-border: #cfcfcf;
   --placeholder: #9a9a9a;
-  --btn-bg: transparent;
-  --btn-active-bg: #111111;
-  --btn-active-text: #ffffff;
 }
 
 @media (prefers-color-scheme: dark){
@@ -70,9 +69,6 @@
     --input-bg: transparent;
     --input-border: #666666;
     --placeholder: #9b9b9b;
-    --btn-bg: transparent;
-    --btn-active-bg: #f5f5f5;
-    --btn-active-text: #111111;
   }
 }
 
@@ -109,19 +105,19 @@ label{
   display: block;
   color: var(--text-sub);
   font-weight: 500;
+  margin-bottom: 4px;
 }
 
 .ratio-input{
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
 .ratio-input span{
   font-size: 18px;
   font-weight: 700;
-  margin-top: 0;
   color: var(--text-main);
   white-space: nowrap;
 }
@@ -129,7 +125,7 @@ label{
 input{
   width: 100%;
   padding: 10px;
-  margin: 8px 0 15px 0;
+  margin: 0;
   border-radius: 6px;
   border: 1px solid var(--input-border);
   font-size: 16px;
@@ -150,37 +146,37 @@ input::-webkit-outer-spin-button{
   margin: 0;
 }
 
-.unit-input-wrap{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 8px 0 15px 0;
+.unit-input{
+  position: relative;
+  margin-bottom: 10px;
 }
 
-.unit-input-wrap input{
-  margin: 0;
-  flex: 1;
+.unit-input input{
+  padding-right: 86px;
 }
 
-.unit-toggle{
+.unit-inside{
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
   display: inline-flex;
-  border: 1px solid var(--input-border);
-  border-radius: 6px;
-  overflow: hidden;
-  flex-shrink: 0;
+  align-items: center;
+  background: transparent;
 }
 
 .unit-btn{
   appearance: none;
   border: none;
-  background: var(--btn-bg);
-  color: var(--text-main);
+  background: transparent;
+  color: var(--text-sub);
   font-family: var(--ui-font);
-  font-size: 14px;
-  font-weight: 600;
-  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 0 8px;
+  height: 24px;
   cursor: pointer;
-  min-width: 48px;
+  line-height: 1;
 }
 
 .unit-btn + .unit-btn{
@@ -188,8 +184,15 @@ input::-webkit-outer-spin-button{
 }
 
 .unit-btn.active{
-  background: var(--btn-active-bg);
-  color: var(--btn-active-text);
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.group-divider{
+  width: 100%;
+  height: 1px;
+  background: var(--divider);
+  margin: 20px 0 20px 0;
 }
 
 @media (max-width: 768px){
@@ -210,7 +213,7 @@ input::-webkit-outer-spin-button{
 
   label{
     font-size: 15px;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
   }
 
   input{
@@ -220,22 +223,25 @@ input::-webkit-outer-spin-button{
 
   .ratio-input{
     gap: 6px;
-    margin-bottom: 3px;
+    margin-bottom: 10px;
   }
 
   .ratio-input span{
     font-size: 20px;
   }
 
-  .unit-input-wrap{
-    gap: 8px;
-    margin: 8px 0 15px 0;
+  .unit-input input{
+    padding-right: 76px;
   }
 
   .unit-btn{
-    padding: 8px 12px;
-    font-size: 13px;
-    min-width: 42px;
+    font-size: 12px;
+    padding: 0 7px;
+    height: 22px;
+  }
+
+  .group-divider{
+    margin: 20px 0 12px 0;
   }
 }
 </style>
@@ -246,7 +252,6 @@ const totalAmountEl = document.getElementById("totalAmount");
 const shampooAmountEl = document.getElementById("shampooAmount");
 const waterAmountEl = document.getElementById("waterAmount");
 
-const allFields = [waterRatioEl, totalAmountEl, shampooAmountEl, waterAmountEl];
 let isUpdating = false;
 
 const units = {
@@ -268,22 +273,6 @@ function formatNumber(value) {
   return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2);
 }
 
-function isFilled(el) {
-  return el.value.trim() !== "";
-}
-
-function filledCount() {
-  return allFields.filter(isFilled).length;
-}
-
-function clearOthers(activeEl) {
-  isUpdating = true;
-  allFields.forEach(el => {
-    if (el !== activeEl) el.value = "";
-  });
-  isUpdating = false;
-}
-
 function toMl(fieldId, value) {
   if (!isFinite(value)) return NaN;
   return units[fieldId] === "L" ? value * 1000 : value;
@@ -294,132 +283,112 @@ function fromMl(fieldId, valueMl) {
   return units[fieldId] === "L" ? valueMl / 1000 : valueMl;
 }
 
-function getState() {
+function clearBottomPair() {
+  shampooAmountEl.value = "";
+  waterAmountEl.value = "";
+}
+
+function clearTopPair() {
+  waterRatioEl.value = "";
+  totalAmountEl.value = "";
+}
+
+function topPairValid() {
   const ratio = parseNumber(waterRatioEl.value);
-  const total = parseNumber(totalAmountEl.value);
-  const shampoo = parseNumber(shampooAmountEl.value);
-  const water = parseNumber(waterAmountEl.value);
+  const totalRaw = parseNumber(totalAmountEl.value);
+  const totalMl = toMl("totalAmount", totalRaw);
 
-  return {
-    ratio,
-    totalMl: toMl("totalAmount", total),
-    shampooMl: toMl("shampooAmount", shampoo),
-    waterMl: toMl("waterAmount", water),
-    ratioFilled: !isNaN(ratio),
-    totalFilled: !isNaN(total),
-    shampooFilled: !isNaN(shampoo),
-    waterFilled: !isNaN(water)
-  };
+  return !isNaN(ratio) && !isNaN(totalMl) && ratio >= 0 && totalMl >= 0;
 }
 
-function setFieldValue(el, fieldId, valueMlOrRaw, isRatio = false) {
-  if (isRatio) {
-    el.value = formatNumber(valueMlOrRaw);
-    return;
-  }
-  const converted = fromMl(fieldId, valueMlOrRaw);
-  el.value = formatNumber(converted);
+function bottomPairValid() {
+  const shampooRaw = parseNumber(shampooAmountEl.value);
+  const waterRaw = parseNumber(waterAmountEl.value);
+  const shampooMl = toMl("shampooAmount", shampooRaw);
+  const waterMl = toMl("waterAmount", waterRaw);
+
+  return !isNaN(shampooMl) && !isNaN(waterMl) && shampooMl > 0 && waterMl >= 0;
 }
 
-function calculateFromTwoInputs() {
-  const s = getState();
+function calculateFromTopPair() {
+  const ratio = parseNumber(waterRatioEl.value);
+  const totalMl = toMl("totalAmount", parseNumber(totalAmountEl.value));
 
-  // 1) 희석비 + 총 용량 -> 원액 + 물
-  if (s.ratioFilled && s.totalFilled && !s.shampooFilled && !s.waterFilled) {
-    if (s.ratio < 0 || s.totalMl < 0) return;
-    const shampooMl = s.totalMl / (1 + s.ratio);
-    const waterMl = s.totalMl - shampooMl;
+  if (isNaN(ratio) || isNaN(totalMl) || ratio < 0 || totalMl < 0) return;
 
-    isUpdating = true;
-    setFieldValue(shampooAmountEl, "shampooAmount", shampooMl);
-    setFieldValue(waterAmountEl, "waterAmount", waterMl);
-    isUpdating = false;
-    return;
-  }
+  const shampooMl = totalMl / (1 + ratio);
+  const waterMl = totalMl - shampooMl;
 
-  // 2) 희석비 + 원액 -> 총 용량 + 물
-  if (s.ratioFilled && s.shampooFilled && !s.totalFilled && !s.waterFilled) {
-    if (s.ratio < 0 || s.shampooMl < 0) return;
-    const waterMl = s.shampooMl * s.ratio;
-    const totalMl = s.shampooMl + waterMl;
-
-    isUpdating = true;
-    setFieldValue(totalAmountEl, "totalAmount", totalMl);
-    setFieldValue(waterAmountEl, "waterAmount", waterMl);
-    isUpdating = false;
-    return;
-  }
-
-  // 3) 희석비 + 물 -> 원액 + 총 용량
-  if (s.ratioFilled && s.waterFilled && !s.totalFilled && !s.shampooFilled) {
-    if (s.ratio <= 0 || s.waterMl < 0) return;
-    const shampooMl = s.waterMl / s.ratio;
-    const totalMl = shampooMl + s.waterMl;
-
-    isUpdating = true;
-    setFieldValue(shampooAmountEl, "shampooAmount", shampooMl);
-    setFieldValue(totalAmountEl, "totalAmount", totalMl);
-    isUpdating = false;
-    return;
-  }
-
-  // 4) 총 용량 + 원액 -> 희석비 + 물
-  if (s.totalFilled && s.shampooFilled && !s.ratioFilled && !s.waterFilled) {
-    if (s.totalMl < 0 || s.shampooMl < 0 || s.shampooMl > s.totalMl || s.shampooMl === 0) return;
-    const waterMl = s.totalMl - s.shampooMl;
-    const ratio = waterMl / s.shampooMl;
-
-    isUpdating = true;
-    setFieldValue(waterRatioEl, "waterRatio", ratio, true);
-    setFieldValue(waterAmountEl, "waterAmount", waterMl);
-    isUpdating = false;
-    return;
-  }
-
-  // 5) 총 용량 + 물 -> 희석비 + 원액
-  if (s.totalFilled && s.waterFilled && !s.ratioFilled && !s.shampooFilled) {
-    if (s.totalMl < 0 || s.waterMl < 0 || s.waterMl > s.totalMl) return;
-    const shampooMl = s.totalMl - s.waterMl;
-    if (shampooMl <= 0) return;
-    const ratio = s.waterMl / shampooMl;
-
-    isUpdating = true;
-    setFieldValue(waterRatioEl, "waterRatio", ratio, true);
-    setFieldValue(shampooAmountEl, "shampooAmount", shampooMl);
-    isUpdating = false;
-    return;
-  }
-
-  // 6) 원액 + 물 -> 희석비 + 총 용량
-  if (s.shampooFilled && s.waterFilled && !s.ratioFilled && !s.totalFilled) {
-    if (s.shampooMl <= 0 || s.waterMl < 0) return;
-    const ratio = s.waterMl / s.shampooMl;
-    const totalMl = s.shampooMl + s.waterMl;
-
-    isUpdating = true;
-    setFieldValue(waterRatioEl, "waterRatio", ratio, true);
-    setFieldValue(totalAmountEl, "totalAmount", totalMl);
-    isUpdating = false;
-  }
+  isUpdating = true;
+  shampooAmountEl.value = formatNumber(fromMl("shampooAmount", shampooMl));
+  waterAmountEl.value = formatNumber(fromMl("waterAmount", waterMl));
+  isUpdating = false;
 }
 
-allFields.forEach(field => {
-  field.addEventListener("focus", (e) => {
-    if (isUpdating) return;
-    if (filledCount() === 4) {
-      clearOthers(e.target);
-    }
-  });
+function calculateFromBottomPair() {
+  const shampooMl = toMl("shampooAmount", parseNumber(shampooAmountEl.value));
+  const waterMl = toMl("waterAmount", parseNumber(waterAmountEl.value));
 
-  field.addEventListener("input", () => {
-    if (isUpdating) return;
-    if (filledCount() === 2) {
-      calculateFromTwoInputs();
-    }
-  });
+  if (isNaN(shampooMl) || isNaN(waterMl) || shampooMl <= 0 || waterMl < 0) return;
+
+  const ratio = waterMl / shampooMl;
+  const totalMl = shampooMl + waterMl;
+
+  isUpdating = true;
+  waterRatioEl.value = formatNumber(ratio);
+  totalAmountEl.value = formatNumber(fromMl("totalAmount", totalMl));
+  isUpdating = false;
+}
+
+waterRatioEl.addEventListener("input", () => {
+  if (isUpdating) return;
+
+  isUpdating = true;
+  clearBottomPair();
+  isUpdating = false;
+
+  if (topPairValid()) {
+    calculateFromTopPair();
+  }
 });
 
-document.querySelectorAll(".unit-toggle").forEach(toggle => {
+totalAmountEl.addEventListener("input", () => {
+  if (isUpdating) return;
+
+  isUpdating = true;
+  clearBottomPair();
+  isUpdating = false;
+
+  if (topPairValid()) {
+    calculateFromTopPair();
+  }
+});
+
+shampooAmountEl.addEventListener("input", () => {
+  if (isUpdating) return;
+
+  isUpdating = true;
+  clearTopPair();
+  isUpdating = false;
+
+  if (bottomPairValid()) {
+    calculateFromBottomPair();
+  }
+});
+
+waterAmountEl.addEventListener("input", () => {
+  if (isUpdating) return;
+
+  isUpdating = true;
+  clearTopPair();
+  isUpdating = false;
+
+  if (bottomPairValid()) {
+    calculateFromBottomPair();
+  }
+});
+
+document.querySelectorAll(".unit-inside").forEach(toggle => {
   const targetId = toggle.dataset.target;
   const inputEl = document.getElementById(targetId);
 
@@ -432,8 +401,8 @@ document.querySelectorAll(".unit-toggle").forEach(toggle => {
       const currentValue = parseNumber(inputEl.value);
 
       if (!isNaN(currentValue)) {
-        let valueMl = oldUnit === "L" ? currentValue * 1000 : currentValue;
-        let converted = newUnit === "L" ? valueMl / 1000 : valueMl;
+        const valueMl = oldUnit === "L" ? currentValue * 1000 : currentValue;
+        const converted = newUnit === "L" ? valueMl / 1000 : valueMl;
         inputEl.value = formatNumber(converted);
       }
 
@@ -442,8 +411,26 @@ document.querySelectorAll(".unit-toggle").forEach(toggle => {
       toggle.querySelectorAll(".unit-btn").forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
 
-      if (!isUpdating && filledCount() === 2) {
-        calculateFromTwoInputs();
+      if (isUpdating) return;
+
+      if (targetId === "totalAmount") {
+        isUpdating = true;
+        clearBottomPair();
+        isUpdating = false;
+
+        if (topPairValid()) {
+          calculateFromTopPair();
+        }
+      }
+
+      if (targetId === "shampooAmount" || targetId === "waterAmount") {
+        isUpdating = true;
+        clearTopPair();
+        isUpdating = false;
+
+        if (bottomPairValid()) {
+          calculateFromBottomPair();
+        }
       }
     });
   });
