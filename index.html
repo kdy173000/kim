@@ -2,68 +2,53 @@
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
 
 <div class="dilution-calculator">
-
   <h2 class="calc-title">희석비&nbsp;</h2>
 
   <div class="calc-body">
-
     <div class="calc-input">
+
       <label>희석비</label>
       <div class="ratio-input">
-        <span>1:</span>
-        <input type="text" id="waterRatio" placeholder="10" inputmode="numeric">
+        <span>1 :</span>
+        <input type="text" id="waterRatio" placeholder="10" inputmode="decimal">
       </div>
 
-      <label>총 용량 (ml)</label>
-      <input type="text" id="totalAmount" placeholder="1000" inputmode="numeric">
+      <label>총 용량</label>
+      <div class="unit-input-wrap">
+        <input type="text" id="totalAmount" placeholder="1000" inputmode="decimal">
+        <div class="unit-toggle" data-target="totalAmount">
+          <button type="button" class="unit-btn active" data-unit="ml">ml</button>
+          <button type="button" class="unit-btn" data-unit="L">L</button>
+        </div>
+      </div>
+
+      <label>원액</label>
+      <div class="unit-input-wrap">
+        <input type="text" id="shampooAmount" placeholder="90.91" inputmode="decimal">
+        <div class="unit-toggle" data-target="shampooAmount">
+          <button type="button" class="unit-btn active" data-unit="ml">ml</button>
+          <button type="button" class="unit-btn" data-unit="L">L</button>
+        </div>
+      </div>
+
+      <label>물</label>
+      <div class="unit-input-wrap">
+        <input type="text" id="waterAmount" placeholder="909.09" inputmode="decimal">
+        <div class="unit-toggle" data-target="waterAmount">
+          <button type="button" class="unit-btn active" data-unit="ml">ml</button>
+          <button type="button" class="unit-btn" data-unit="L">L</button>
+        </div>
+      </div>
+
     </div>
-
-    <div class="result">
-      <p class="result-label">원액</p>
-      <div class="result-value">
-        <span id="shampooAmount">0</span> ml
-      </div>
-
-      <p class="result-label">물</p>
-      <div class="result-value">
-        <span id="waterAmount">0</span> ml
-      </div>
-    </div>
-
   </div>
 </div>
-
-<script>
-function calculateDilution() {
-  const waterRatio = parseFloat(document.getElementById("waterRatio").value);
-  const total = parseFloat(document.getElementById("totalAmount").value);
-
-  if (isNaN(waterRatio) || isNaN(total)) {
-    document.getElementById("shampooAmount").innerText = "0";
-    document.getElementById("waterAmount").innerText = "0";
-    return;
-  }
-
-  const shampooRatio = 1;
-  const totalParts = shampooRatio + waterRatio;
-
-  const shampooAmount = (total * shampooRatio) / totalParts;
-  const waterAmount = (total * waterRatio) / totalParts;
-
-  document.getElementById("shampooAmount").innerText = shampooAmount.toFixed(2);
-  document.getElementById("waterAmount").innerText = waterAmount.toFixed(2);
-}
-
-document.getElementById("waterRatio").addEventListener("input", calculateDilution);
-document.getElementById("totalAmount").addEventListener("input", calculateDilution);
-</script>
 
 <style>
 :root{
   color-scheme: light dark;
   --ui-font: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 
-  /* Light mode */
   --calc-border: #d9d9d9;
   --divider: #e5e5e5;
   --text-main: #111111;
@@ -71,11 +56,13 @@ document.getElementById("totalAmount").addEventListener("input", calculateDiluti
   --input-bg: transparent;
   --input-border: #cfcfcf;
   --placeholder: #9a9a9a;
+  --btn-bg: transparent;
+  --btn-active-bg: #111111;
+  --btn-active-text: #ffffff;
 }
 
 @media (prefers-color-scheme: dark){
   :root{
-    /* Dark mode */
     --calc-border: #6b6b6b;
     --divider: #555555;
     --text-main: #f5f5f5;
@@ -83,6 +70,9 @@ document.getElementById("totalAmount").addEventListener("input", calculateDiluti
     --input-bg: transparent;
     --input-border: #666666;
     --placeholder: #9b9b9b;
+    --btn-bg: transparent;
+    --btn-active-bg: #f5f5f5;
+    --btn-active-text: #111111;
   }
 }
 
@@ -98,7 +88,6 @@ document.getElementById("totalAmount").addEventListener("input", calculateDiluti
   box-sizing: border-box;
 }
 
-/* TITLE */
 .calc-title{
   text-align: center;
   margin-bottom: 30px;
@@ -107,13 +96,11 @@ document.getElementById("totalAmount").addEventListener("input", calculateDiluti
   color: var(--text-main);
 }
 
-/* BODY */
 .calc-body{
   display: flex;
   gap: 40px;
 }
 
-/* INPUT */
 .calc-input{
   flex: 1;
 }
@@ -136,6 +123,7 @@ label{
   font-weight: 700;
   margin-top: 0;
   color: var(--text-main);
+  white-space: nowrap;
 }
 
 input{
@@ -162,36 +150,48 @@ input::-webkit-outer-spin-button{
   margin: 0;
 }
 
-/* RESULT */
-.result{
-  flex: 1;
-  border-left: 1px solid var(--divider);
-  padding-left: 30px;
+.unit-input-wrap{
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 6px;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 15px 0;
 }
 
-.result-label{
-  font-size: 18px;
-  font-weight: 700;
+.unit-input-wrap input{
   margin: 0;
-  margin-bottom: 2px;
-  line-height: 40px;
-  color: var(--text-sub);
+  flex: 1;
 }
 
-.result-value{
-  font-size: 30px;
-  font-weight: 700;
-  margin: 0;
-  margin-bottom: 10px;
-  line-height: 20px;
+.unit-toggle{
+  display: inline-flex;
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.unit-btn{
+  appearance: none;
+  border: none;
+  background: var(--btn-bg);
   color: var(--text-main);
+  font-family: var(--ui-font);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 14px;
+  cursor: pointer;
+  min-width: 48px;
 }
 
-/* MOBILE */
+.unit-btn + .unit-btn{
+  border-left: 1px solid var(--input-border);
+}
+
+.unit-btn.active{
+  background: var(--btn-active-bg);
+  color: var(--btn-active-text);
+}
+
 @media (max-width: 768px){
   .dilution-calculator{
     padding: 17px;
@@ -219,32 +219,233 @@ input::-webkit-outer-spin-button{
   }
 
   .ratio-input{
-    display: flex;
-    align-items: center;
     gap: 6px;
     margin-bottom: 3px;
   }
 
   .ratio-input span{
     font-size: 20px;
-    margin-top: 0;
   }
 
-  .result{
-    border-left: none;
-    border-top: 1px solid var(--divider);
-    padding-left: 0;
-    padding-top: 15px;
+  .unit-input-wrap{
+    gap: 8px;
+    margin: 8px 0 15px 0;
   }
 
-  .result-label{
-    font-size: 15px;
-    line-height: 28px;
-  }
-
-  .result-value{
-    font-size: 22px;
-    line-height: 18px;
+  .unit-btn{
+    padding: 8px 12px;
+    font-size: 13px;
+    min-width: 42px;
   }
 }
 </style>
+
+<script>
+const waterRatioEl = document.getElementById("waterRatio");
+const totalAmountEl = document.getElementById("totalAmount");
+const shampooAmountEl = document.getElementById("shampooAmount");
+const waterAmountEl = document.getElementById("waterAmount");
+
+const allFields = [waterRatioEl, totalAmountEl, shampooAmountEl, waterAmountEl];
+let isUpdating = false;
+
+const units = {
+  totalAmount: "ml",
+  shampooAmount: "ml",
+  waterAmount: "ml"
+};
+
+function parseNumber(value) {
+  if (value == null) return NaN;
+  const cleaned = String(value).trim().replace(/,/g, ".");
+  if (cleaned === "") return NaN;
+  return parseFloat(cleaned);
+}
+
+function formatNumber(value) {
+  if (!isFinite(value)) return "";
+  const rounded = Math.round(value * 100) / 100;
+  return Number.isInteger(rounded) ? String(rounded) : rounded.toFixed(2);
+}
+
+function isFilled(el) {
+  return el.value.trim() !== "";
+}
+
+function filledCount() {
+  return allFields.filter(isFilled).length;
+}
+
+function clearOthers(activeEl) {
+  isUpdating = true;
+  allFields.forEach(el => {
+    if (el !== activeEl) el.value = "";
+  });
+  isUpdating = false;
+}
+
+function toMl(fieldId, value) {
+  if (!isFinite(value)) return NaN;
+  return units[fieldId] === "L" ? value * 1000 : value;
+}
+
+function fromMl(fieldId, valueMl) {
+  if (!isFinite(valueMl)) return NaN;
+  return units[fieldId] === "L" ? valueMl / 1000 : valueMl;
+}
+
+function getState() {
+  const ratio = parseNumber(waterRatioEl.value);
+  const total = parseNumber(totalAmountEl.value);
+  const shampoo = parseNumber(shampooAmountEl.value);
+  const water = parseNumber(waterAmountEl.value);
+
+  return {
+    ratio,
+    totalMl: toMl("totalAmount", total),
+    shampooMl: toMl("shampooAmount", shampoo),
+    waterMl: toMl("waterAmount", water),
+    ratioFilled: !isNaN(ratio),
+    totalFilled: !isNaN(total),
+    shampooFilled: !isNaN(shampoo),
+    waterFilled: !isNaN(water)
+  };
+}
+
+function setFieldValue(el, fieldId, valueMlOrRaw, isRatio = false) {
+  if (isRatio) {
+    el.value = formatNumber(valueMlOrRaw);
+    return;
+  }
+  const converted = fromMl(fieldId, valueMlOrRaw);
+  el.value = formatNumber(converted);
+}
+
+function calculateFromTwoInputs() {
+  const s = getState();
+
+  // 1) 희석비 + 총 용량 -> 원액 + 물
+  if (s.ratioFilled && s.totalFilled && !s.shampooFilled && !s.waterFilled) {
+    if (s.ratio < 0 || s.totalMl < 0) return;
+    const shampooMl = s.totalMl / (1 + s.ratio);
+    const waterMl = s.totalMl - shampooMl;
+
+    isUpdating = true;
+    setFieldValue(shampooAmountEl, "shampooAmount", shampooMl);
+    setFieldValue(waterAmountEl, "waterAmount", waterMl);
+    isUpdating = false;
+    return;
+  }
+
+  // 2) 희석비 + 원액 -> 총 용량 + 물
+  if (s.ratioFilled && s.shampooFilled && !s.totalFilled && !s.waterFilled) {
+    if (s.ratio < 0 || s.shampooMl < 0) return;
+    const waterMl = s.shampooMl * s.ratio;
+    const totalMl = s.shampooMl + waterMl;
+
+    isUpdating = true;
+    setFieldValue(totalAmountEl, "totalAmount", totalMl);
+    setFieldValue(waterAmountEl, "waterAmount", waterMl);
+    isUpdating = false;
+    return;
+  }
+
+  // 3) 희석비 + 물 -> 원액 + 총 용량
+  if (s.ratioFilled && s.waterFilled && !s.totalFilled && !s.shampooFilled) {
+    if (s.ratio <= 0 || s.waterMl < 0) return;
+    const shampooMl = s.waterMl / s.ratio;
+    const totalMl = shampooMl + s.waterMl;
+
+    isUpdating = true;
+    setFieldValue(shampooAmountEl, "shampooAmount", shampooMl);
+    setFieldValue(totalAmountEl, "totalAmount", totalMl);
+    isUpdating = false;
+    return;
+  }
+
+  // 4) 총 용량 + 원액 -> 희석비 + 물
+  if (s.totalFilled && s.shampooFilled && !s.ratioFilled && !s.waterFilled) {
+    if (s.totalMl < 0 || s.shampooMl < 0 || s.shampooMl > s.totalMl || s.shampooMl === 0) return;
+    const waterMl = s.totalMl - s.shampooMl;
+    const ratio = waterMl / s.shampooMl;
+
+    isUpdating = true;
+    setFieldValue(waterRatioEl, "waterRatio", ratio, true);
+    setFieldValue(waterAmountEl, "waterAmount", waterMl);
+    isUpdating = false;
+    return;
+  }
+
+  // 5) 총 용량 + 물 -> 희석비 + 원액
+  if (s.totalFilled && s.waterFilled && !s.ratioFilled && !s.shampooFilled) {
+    if (s.totalMl < 0 || s.waterMl < 0 || s.waterMl > s.totalMl) return;
+    const shampooMl = s.totalMl - s.waterMl;
+    if (shampooMl <= 0) return;
+    const ratio = s.waterMl / shampooMl;
+
+    isUpdating = true;
+    setFieldValue(waterRatioEl, "waterRatio", ratio, true);
+    setFieldValue(shampooAmountEl, "shampooAmount", shampooMl);
+    isUpdating = false;
+    return;
+  }
+
+  // 6) 원액 + 물 -> 희석비 + 총 용량
+  if (s.shampooFilled && s.waterFilled && !s.ratioFilled && !s.totalFilled) {
+    if (s.shampooMl <= 0 || s.waterMl < 0) return;
+    const ratio = s.waterMl / s.shampooMl;
+    const totalMl = s.shampooMl + s.waterMl;
+
+    isUpdating = true;
+    setFieldValue(waterRatioEl, "waterRatio", ratio, true);
+    setFieldValue(totalAmountEl, "totalAmount", totalMl);
+    isUpdating = false;
+  }
+}
+
+allFields.forEach(field => {
+  field.addEventListener("focus", (e) => {
+    if (isUpdating) return;
+    if (filledCount() === 4) {
+      clearOthers(e.target);
+    }
+  });
+
+  field.addEventListener("input", () => {
+    if (isUpdating) return;
+    if (filledCount() === 2) {
+      calculateFromTwoInputs();
+    }
+  });
+});
+
+document.querySelectorAll(".unit-toggle").forEach(toggle => {
+  const targetId = toggle.dataset.target;
+  const inputEl = document.getElementById(targetId);
+
+  toggle.querySelectorAll(".unit-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const newUnit = btn.dataset.unit;
+      const oldUnit = units[targetId];
+      if (newUnit === oldUnit) return;
+
+      const currentValue = parseNumber(inputEl.value);
+
+      if (!isNaN(currentValue)) {
+        let valueMl = oldUnit === "L" ? currentValue * 1000 : currentValue;
+        let converted = newUnit === "L" ? valueMl / 1000 : valueMl;
+        inputEl.value = formatNumber(converted);
+      }
+
+      units[targetId] = newUnit;
+
+      toggle.querySelectorAll(".unit-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      if (!isUpdating && filledCount() === 2) {
+        calculateFromTwoInputs();
+      }
+    });
+  });
+});
+</script>
